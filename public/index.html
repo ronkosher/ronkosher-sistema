@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D1830">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="/manifest.webmanifest">
+<title>Ron Kosher Sistema</title>
+<style>:root{padding-top:env(safe-area-inset-top,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: app de una mano para el celular. Barra de marca arriba, la tarea en el medio, seis secciones fijas abajo. Tema único oscuro: azul y dorado de Ron Kosher. */
+:root{
+  color-scheme: dark;
+  --night:#0D1830; --panel:#14223F; --panel2:#1B2C4F; --line:#2D3E63;
+  --ink:#F2ECDD; --muted:#A9B4CC; --gold:#D8B24E; --gold-ink:#1A1405;
+  --ok:#7FD6A8; --warn:#F0B35A; --bad:#FF8A8A;
+  --display:'Playfair Display', Georgia, serif;
+  --body:'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+html,body{height:100%}
+body{background:var(--night);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.app{max-width:980px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(92px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-size:22px;color:var(--gold);letter-spacing:.02em}
+.brand small{font-family:var(--body);font-size:12px;color:var(--muted);font-weight:500;margin-left:8px;letter-spacing:0}
+.who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+select,input,textarea{background:var(--night);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0;width:100%}
+.who{flex-wrap:wrap}.who select{width:auto;padding:6px 10px;max-width:150px}
+h2{margin:0;font-size:19px;font-weight:700;text-wrap:balance}
+h3{margin:0;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.banner{border:1px solid var(--warn);color:var(--warn);border-radius:10px;padding:9px 12px;font-size:13.5px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 14px;font-weight:600;min-height:44px}
+.btn.pri{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
+.btn.bad{border-color:var(--bad);color:var(--bad)}
+.btn.sm{min-height:36px;padding:6px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi b{display:block;font-family:var(--mono);font-size:24px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12.5px;color:var(--muted)}
+.meter{height:8px;background:var(--panel2);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--gold)}
+.list{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card.tap{cursor:pointer}
+.card .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card .name{font-weight:700;overflow-wrap:anywhere}
+.card .sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.pill.nuevo{color:var(--ink)}.pill.armando{color:var(--warn);border-color:var(--warn)}
+.pill.listo{color:var(--gold);border-color:var(--gold)}.pill.reparto{color:#9CC4FF;border-color:#9CC4FF}
+.pill.entregado{color:var(--ok);border-color:var(--ok)}.pill.anulado,.pill.bad{color:var(--bad);border-color:var(--bad)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}.pill.warn{color:var(--warn);border-color:var(--warn)}
+.ln{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:9px 0;border-top:1px solid var(--line);align-items:center}
+.ln .q{font-family:var(--mono);font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.alert{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.dot{width:9px;height:9px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}.dot.bad{background:var(--bad)}.dot.ok{background:var(--ok)}
+.tl{display:flex;flex-direction:column}
+.tl div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.tl time{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;z-index:5}
+nav button{background:none;border:0;border-radius:10px;padding:8px 2px;font-size:12px;font-weight:600;color:var(--muted);min-height:48px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button b{font-family:var(--mono);font-size:13px;color:var(--ink)}
+nav button[aria-current="page"]{background:var(--panel2);color:var(--gold)}
+.modal{position:fixed;inset:0;background:rgba(5,10,22,.72);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px 16px 0 0;width:100%;max-width:640px;max-height:92%;overflow:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sug{display:flex;flex-direction:column;max-height:210px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.sug button{text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:9px 12px}
+.sug button:first-child{border-top:0}
+.qr{background:#fff;border-radius:10px;padding:8px;width:180px;max-width:100%;align-self:center}
+.qr img{display:block;width:100%;image-rendering:pixelated}
+.code{font-family:var(--mono);font-size:18px;text-align:center;letter-spacing:.06em}
+.foto{max-width:100%;border-radius:10px;border:1px solid var(--line)}
+.msg{border-radius:10px;padding:10px 12px;font-weight:600}
+.msg.bad{background:rgba(255,138,138,.14);color:var(--bad);border:1px solid var(--bad)}
+.msg.ok{background:rgba(127,214,168,.12);color:var(--ok);border:1px solid var(--ok)}
+.msg.warn{background:rgba(240,179,90,.12);color:var(--warn);border:1px solid var(--warn)}
+.filebtn{position:relative;overflow:hidden;text-align:center}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.empty{border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="brand">RON KOSHER<small id="fecha"></small></div>
+    <div class="who"><label for="yo">Quién opera</label><select id="yo"></select><select id="dep" aria-label="Depósito donde estás"></select></div>
+  </header>
+  <div class="banner" id="estado">Conectando con los datos…</div>
+  <main id="main"></main>
+</div>
+<nav id="nav" aria-label="Secciones"></nav>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const h=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$ '+Math.round(n||0).toLocaleString('es-AR');
+const num=(n,d)=>(+n||0).toLocaleString('es-AR',{maximumFractionDigits:d==null?2:d});
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const hoy=()=>ymd(new Date());
+const hm=t=>{const d=new Date(t);return pad(d.getDate())+'/'+pad(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes());};
+const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const rid=n=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<n;i++)s+=a[Math.floor(Math.random()*a.length)];return s;};
+const EST={nuevo:'Para armar',armando:'Armando',listo:'Listo',reparto:'En reparto',entregado:'Entregado',anulado:'Anulado'};
+const TABS=[['hoy','Hoy'],['pedidos','Pedidos'],['armar','Armar'],['reparto','Reparto'],['stock','Stock'],['caja','Caja']];
+const MEDIOS=['Transferencia','Efectivo','Cheque','Cuenta corriente','Ya pagado'];
+const CATS=['Mercadería','Sueldos','Fletes y motos','Alquiler','Servicios','Impuestos','Insumos y packaging','Retiro de socios','Otros'];
+
+const S={db:null,prod:[],pmap:new Map(),cli:[],cfg:{nombres:[],rinde_a:[],franjas:['11 a 13','15 a 17','18 a 20'],tolerancia:10,max_tanda:5},
+  art:[],amap:new Map(),ini:new Map(),dep:'',ped:[],stock:new Map(),caja:[],tab:'hoy',sel:null,q:'',tanda:new Set(),chofer:'',yo:'',ready:false};
+try{S.yo=localStorage.getItem('rk-yo')||'';S.dep=localStorage.getItem('rk-dep')||'';}catch(e){}
+
+/* ---------- conexión con el servidor (ronkosher.com) ---------- */
+async function api(p,opt){const r=await fetch('/api/'+p,Object.assign({headers:{'content-type':'application/json'},credentials:'same-origin'},opt||{}));const j=await r.json().catch(()=>({error:'El servidor respondió algo inesperado ('+r.status+').'}));if(!r.ok)throw Object.assign(new Error(j.error||('Error '+r.status)),{code:r.status});return j;}
+async function makeDb(){
+  try{S.me=await api('me');}catch(e){S.err=e.message;return null;}
+  S.yo=S.me.nombre;
+  const D=new Map(),subs=[],pend=new Map(),cola=new Map();let since=0,first=true;
+  const fire=()=>subs.forEach(f=>{try{f();}catch(e){}});
+  const snap=p=>({id:p.split('/').pop(),exists:D.has(p),data:()=>D.has(p)?JSON.parse(JSON.stringify(D.get(p))):undefined});
+  async function pull(){try{const r=await api('sync?since='+since);let ch=false;r.docs.forEach(d=>{const p=d.col+'/'+d.id;if(d.updated>since)since=d.updated;if(pend.get(p))return;if(JSON.stringify(D.get(p))!==JSON.stringify(d.data)){D.set(p,d.data);ch=true;}});
+      if(S.ready&&$('estado').dataset.off){$('estado').hidden=true;delete $('estado').dataset.off;}if(ch||first){first=false;fire();}}
+    catch(e){if(first)throw e;$('estado').hidden=false;$('estado').dataset.off=1;$('estado').textContent='Sin conexión con el servidor. Lo que ves puede estar desactualizado; se reconecta solo.';}}
+  function write(p,d,merge){const had=D.has(p),prev=D.get(p);D.set(p,merge?Object.assign({},prev,d):JSON.parse(JSON.stringify(d)));pend.set(p,(pend.get(p)||0)+1);fire();
+    const run=()=>api('doc/'+p,{method:'PUT',body:JSON.stringify({data:d,merge:merge})}).then(()=>{pend.set(p,pend.get(p)-1);},e=>{pend.set(p,pend.get(p)-1);if(had)D.set(p,prev);else D.delete(p);fire();throw e;});
+    const q=(cola.get(p)||Promise.resolve()).then(run,run);cola.set(p,q.catch(()=>{}));return q;}
+  const doc=p=>({id:p.split('/').pop(),path:p,
+    get:async()=>{if(D.has(p))return snap(p);const r=await api('doc/'+p);return {id:p.split('/').pop(),exists:!!r.exists,data:()=>r.data};},
+    set:d=>write(p,d,false),update:d=>write(p,d,true),
+    onSnapshot(n){const f=()=>n(snap(p));subs.push(f);if(!first)f();return()=>{};}});
+  const collection=c=>{let ob=null,dir='asc',lim=1e9;const pre=c+'/',n=c.split('/').length+1;const q={
+    orderBy(f,d){ob=f;dir=d||'asc';return q;},limit(k){lim=k;return q;},where(){return q;},
+    docs(){let ds=[...D.keys()].filter(k=>k.startsWith(pre)&&k.split('/').length===n).map(snap);if(ob)ds.sort((a,b)=>((a.data()[ob]||0)-(b.data()[ob]||0))*(dir==='desc'?-1:1));return ds.slice(0,lim);},
+    onSnapshot(cb){const f=()=>cb({docs:q.docs()});subs.push(f);if(!first)f();return()=>{};},
+    doc:id=>doc(pre+id),add:d=>{const id=Date.now().toString(36)+'-'+rid(6);return write(pre+id,d,false).then(()=>doc(pre+id));}};return q;};
+  try{await pull();}catch(e){S.err='No se pudieron cargar los datos: '+e.message;return null;}
+  setInterval(()=>{if(!document.hidden)pull();},4000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull();});
+  return {doc:doc,collection:collection};}
+
+/* ---------- datos ---------- */
+function setProd(items){S.prod=items||[];S.pmap=new Map(S.prod.map(p=>[p.id,p]));}
+function fail(e){$('estado').hidden=false;$('estado').textContent='No se pudo guardar: '+((e&&e.message)||'sin conexión')+'. Probá de nuevo.';}
+async function boot(){
+  const t=setTimeout(()=>{if(!S.ready){$('estado').textContent='Los datos todavía no responden. Dejá la página abierta: se conecta sola.';}},10000);
+  const db=await makeDb();
+  if(!db){clearTimeout(t);$('estado').textContent=S.err||'No se pudo conectar con el sistema. Revisá la conexión y recargá la página.';render();return;}
+  S.db=db;
+  const got=()=>{if(!S.ready){S.ready=true;clearTimeout(t);$('estado').hidden=true;}};
+  const err=e=>{clearTimeout(t);$('estado').hidden=false;$('estado').textContent='Se cortó la conexión con los datos ('+(e&&e.code||'error')+'). Volvé a abrir la página.';};
+  db.doc('catalogo/productos').onSnapshot(s=>{setProd((s.data()||{}).items);got();render();},err);
+  db.doc('catalogo/articulos').onSnapshot(s=>{S.art=(s.data()||{}).items||[];S.amap=new Map(S.art.map(a=>[a.id,a]));render();},err);
+  db.doc('catalogo/stock_inicial').onSnapshot(s=>{S.ini=new Map(((s.data()||{}).items||[]).map(x=>[x.id,x]));render();},err);
+  db.doc('catalogo/config').onSnapshot(s=>{if(s.exists)Object.assign(S.cfg,s.data());fillYo();render();},err);
+  let base=[],extra=[];const mix=()=>{S.cli=base.concat(extra);};
+  db.doc('catalogo/clientes').onSnapshot(s=>{base=(s.data()||{}).items||[];mix();},err);
+  db.collection('clientes').onSnapshot(s=>{extra=s.docs.map(d=>Object.assign({id:d.id},d.data()));mix();},err);
+  db.collection('pedidos').orderBy('creado','desc').limit(400).onSnapshot(s=>{S.ped=s.docs.map(d=>Object.assign({id:d.id},d.data()));got();render();},err);
+  db.collection('stock').onSnapshot(s=>{S.stock=new Map(s.docs.map(d=>[d.id,d.data()]));render();},err);
+  db.collection('caja').orderBy('t','desc').limit(400).onSnapshot(s=>{S.caja=s.docs.map(d=>Object.assign({id:d.id},d.data()));render();},err);
+}
+function fillYo(){$('dep').innerHTML='<option value="">Depósito</option>'+(S.cfg.depositos||[]).map(n=>'<option'+(n===S.dep?' selected':'')+'>'+h(n)+'</option>').join('');const el=$('yo');if(S.me){el.innerHTML='<option>'+h(S.me.nombre)+'</option>';el.disabled=true;return;}el.innerHTML='<option value="">Elegí tu nombre</option>'+S.cfg.nombres.map(n=>'<option'+(n===S.yo?' selected':'')+'>'+h(n)+'</option>').join('');}
+$('dep').addEventListener('change',e=>{S.dep=e.target.value;try{localStorage.setItem('rk-dep',S.dep);}catch(_){}render();});
+/* Stock de un artículo: lo guardado, o el saldo inicial importado si todavía nadie lo movió. */
+const stk=id=>JSON.parse(JSON.stringify(S.stock.get(id)||S.ini.get(id)||{kg:0,dep:{},lotes:[]}));
+function needDep(){if(S.dep)return true;$('estado').hidden=false;$('estado').textContent='Elegí arriba en qué depósito estás. El stock se mueve en ese depósito.';window.scrollTo(0,0);return false;}
+$('yo').addEventListener('change',e=>{S.yo=e.target.value;try{localStorage.setItem('rk-yo',S.yo);}catch(_){}render();});
+const ev=(p,x)=>(p.ev||[]).concat([{t:Date.now(),q:S.yo||'sin nombre',x:x}]);
+const save=(p,patch)=>S.db.doc('pedidos/'+p.id).update(patch).catch(fail);
+const precio=(p,cli)=>{const l=cli&&cli.l;return (p.l&&l&&p.l[l]!=null)?p.l[l]:p.p;};
+const totalPed=p=>(p.lineas||[]).reduce((a,l)=>a+(l.falta?0:(l.prep!=null?l.prep:l.ped)*l.precio),0);
+const saldo=p=>p.estado==='anulado'||p.medio==='Ya pagado'?0:Math.max(0,totalPed(p)-(p.cobrado||0));
+const desvio=l=>l.prep==null||!l.ped?0:Math.abs(l.prep-l.ped)/l.ped*100;
+const delDia=()=>S.ped.filter(p=>p.fecha===hoy()&&p.estado!=='anulado');
+function needYo(){if(S.yo)return true;$('estado').hidden=false;$('estado').textContent='Antes de operar, elegí tu nombre arriba a la derecha. Queda registrado en cada paso.';window.scrollTo(0,0);return false;}
+
+/* ---------- QR ---------- */
+function qrUrl(text){try{const q=qrcode(0,'M');q.addData(text);q.make();const n=q.getModuleCount(),c=document.createElement('canvas'),s=6,m=3;c.width=c.height=(n+m*2)*s;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+m)*s,(r+m)*s,s,s);return c.toDataURL('image/png');}catch(e){return '';}}
+const qrBox=(code)=>{const u=qrUrl(code);return (u?'<div class="qr"><img alt="Código QR '+h(code)+'" src="'+u+'"></div>':'')+'<div class="code">'+h(code)+'</div>';};
+function loadImg(file){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=URL.createObjectURL(file);});}
+function toCanvas(img,max){const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c;}
+async function decode(file){const img=await loadImg(file);
+  if('BarcodeDetector' in window){try{const r=await new BarcodeDetector({formats:['qr_code']}).detect(img);if(r&&r[0])return r[0].rawValue;}catch(e){}}
+  if(window.jsQR){for(const m of [1600,1000,600])for(const z of [1,0.6,0.35]){const full=toCanvas(img,m/z),w=Math.round(full.width*z),hh=Math.round(full.height*z),d=full.getContext('2d').getImageData(Math.round((full.width-w)/2),Math.round((full.height-hh)/2),w,hh),r=jsQR(d.data,w,hh);if(r&&r.data)return r.data;}}
+  else if(!('BarcodeDetector' in window))throw new Error('sin lector');
+  return null;}
+/* Escaneo: foto del código, o escribirlo, o elegir de una lista (queda marcado como manual). */
+function scan(titulo,tipo,opciones,cb){
+  open('<h2>'+h(titulo)+'</h2><p class="note">Apuntá la cámara al código QR de la etiqueta.</p><video id="sc-video" playsinline muted hidden style="width:100%;border-radius:10px;background:#000"></video><button class="btn pri" data-act="sc-live">Escanear con la cámara</button>'+
+   '<div class="btn filebtn">Sacar una foto del código<input id="sc-file" type="file" accept="image/*" capture="environment" aria-label="Sacar foto del código QR"></div>'+
+   '<div class="btn filebtn">Elegir una foto ya sacada<input id="sc-file2" type="file" accept="image/*" aria-label="Elegir una foto del código QR"></div><div id="sc-msg"></div>'+
+   '<label class="f" for="sc-code">O escribí el código de la etiqueta<input id="sc-code" autocomplete="off" autocapitalize="characters" placeholder="'+(tipo==='P'?'1110-AB12':'A103')+'"></label>'+
+   '<div class="row"><button class="btn grow" data-act="sc-ok">Usar código</button><button class="btn" data-act="close">Cancelar</button></div>'+
+   (opciones&&opciones.length?'<h3>Sin etiqueta: elegir a mano</h3><div class="sug">'+opciones.map(o=>'<button data-act="sc-pick" data-id="'+h(o.id)+'">'+h(o.n)+'</button>').join('')+'</div>':''));
+  const done=(raw,manual)=>{let c=String(raw||'').trim().toUpperCase();const m=c.match(/^RK:([PA]):(.+)$/);if(m){if(m[1]!==tipo){$('sc-msg').innerHTML='<div class="msg bad">Ese código es de '+(m[1]==='P'?'un pedido':'un producto')+', no de '+(tipo==='P'?'un pedido':'un producto')+'.</div>';return;}c=m[2];}
+    if(!c)return;close();cb(c,manual);};
+  A['sc-live']=async()=>{const v=$('sc-video');try{const st=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});v.srcObject=st;v.hidden=false;await v.play();let on=true;stopCam=()=>{on=false;st.getTracks().forEach(t=>t.stop());};
+      const det=('BarcodeDetector' in window)?new BarcodeDetector({formats:['qr_code']}):null,c=document.createElement('canvas'),x=c.getContext('2d',{willReadFrequently:true});
+      const tick=async()=>{if(!on)return;let r=null;try{if(det){const o=await det.detect(v);if(o&&o[0])r=o[0].rawValue;}else if(window.jsQR&&v.videoWidth){const k=Math.min(1,900/v.videoWidth);c.width=Math.round(v.videoWidth*k);c.height=Math.round(v.videoHeight*k);x.drawImage(v,0,0,c.width,c.height);const d=x.getImageData(0,0,c.width,c.height),o=jsQR(d.data,c.width,c.height);if(o&&o.data)r=o.data;}}catch(e){}
+        if(r&&on){done(r,false);if(on)setTimeout(tick,1500);return;}setTimeout(tick,120);};tick();
+    }catch(e){$('sc-msg').innerHTML='<div class="msg bad">No se pudo abrir la cámara. Dale permiso de cámara al navegador para esta página, o usá la foto o el código escrito.</div>';}};
+  A['sc-ok']=()=>done($('sc-code').value,true);
+  A['sc-pick']=b=>done(b.dataset.id,true);
+  const onFile=async e=>{const f=e.target.files[0];if(!f)return;$('sc-msg').innerHTML='<div class="msg warn">Leyendo el código…</div>';
+    let r=null;try{r=await decode(f);}catch(x){if(x&&x.message==='sin lector'){$('sc-msg').innerHTML='<div class="msg bad">Este teléfono no pudo cargar el lector de códigos. Escribí el código que figura debajo del QR.</div>';return;}}
+    if(r)done(r,false);else $('sc-msg').innerHTML='<div class="msg bad">No se pudo leer. Acercate, con buena luz, y probá otra vez, o escribí el código.</div>';try{e.target.value='';}catch(_){}};
+  $('sc-file').addEventListener('change',onFile);$('sc-file2').addEventListener('change',onFile);
+}
+
+/* ---------- modal ---------- */
+const A={};
+let stopCam=null;const camOff=()=>{if(stopCam){try{stopCam();}catch(e){}stopCam=null;}};
+function open(html){camOff();$('sheet').innerHTML=html;$('modal').hidden=false;const f=$('sheet').querySelector('input:not([type=file]),select,textarea');if(f&&window.innerWidth>700)f.focus();}
+function close(){camOff();$('modal').hidden=true;$('sheet').innerHTML='';}
+A.close=close;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const f=A[b.dataset.act];if(f)f(b,e);});
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))close();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('modal').hidden)close();});
+
+/* ---------- vistas ---------- */
+function pedCard(p,extra){const ls=p.lineas||[];return '<div class="card tap" data-act="ver" data-id="'+h(p.id)+'"><div class="top"><div class="grow"><div class="name">'+h(p.cliente)+'</div><div class="sub mono">'+h(p.id)+' · '+h(p.fecha===hoy()?'hoy':p.fecha)+' · '+h(p.franja)+'</div></div><span class="pill '+p.estado+'">'+EST[p.estado]+'</span></div>'+
+  '<div class="sub">'+ls.length+' producto'+(ls.length===1?'':'s')+' · '+money(totalPed(p))+(p.dir?' · '+h(p.dir):'')+'</div>'+(extra||'')+'</div>';}
+
+function vHoy(){const d=delDia(),c=e=>d.filter(p=>p.estado===e).length,ent=c('entregado'),now=new Date(),al=[];
+  d.forEach(p=>{const m=/a (\d+)/.exec(p.franja||'');if(m&&p.estado!=='entregado'&&now.getHours()>=+m[1])al.push(['bad','Atrasado: '+p.cliente+' ('+p.franja+'), está '+EST[p.estado].toLowerCase(),p.id]);
+    (p.lineas||[]).forEach(l=>{if(l.falta)al.push(['bad','Faltante en '+p.cliente+': '+l.n+'. Avisar al vendedor.',p.id]);else if(desvio(l)>S.cfg.tolerancia)al.push(['warn',p.cliente+': '+l.n+' pedido '+num(l.ped)+', preparado '+num(l.prep),p.id]);});});
+  S.ped.filter(p=>p.reclamo&&!p.reclamoCerrado).forEach(p=>al.push(['bad','Reclamo abierto: '+p.cliente,p.id]));
+  let neg=0;S.art.forEach(a=>{const d=stk(a.id).dep||{};if(Object.values(d).some(v=>v<-0.001))neg++;});if(neg)al.push(['bad',neg+' artículo'+(neg>1?'s':'')+' con stock negativo en algún depósito. Hay que contarlos.',null]);
+  const sr=S.caja.filter(m=>m.medio==='Efectivo'&&m.tipo==='cobro'&&!m.rendido).reduce((a,m)=>a+m.monto,0);if(sr>0)al.push(['warn','Efectivo sin rendir: '+money(sr)+'. Se rinde solo a '+S.cfg.rinde_a.join(' o ')+'.',null]);
+  const fr=S.cfg.franjas.map(f=>{const x=d.filter(p=>p.franja===f);return '<div class="kpi"><b>'+x.filter(p=>p.estado==='entregado').length+'/'+x.length+'</b><span>Franja '+h(f)+'</span></div>';}).join('');
+  return '<h2>Hoy</h2><div class="card"><div class="top"><div><b class="mono" style="font-size:26px">'+ent+' / '+d.length+'</b><div class="sub">pedidos entregados de los cargados para hoy</div></div><div class="sub" style="text-align:right">Meta<br><b class="mono">70 por día</b></div></div><div class="meter"><i style="width:'+Math.min(100,d.length/70*100)+'%"></i></div></div>'+
+  '<div class="kpis"><div class="kpi"><b>'+c('nuevo')+'</b><span>Para armar</span></div><div class="kpi"><b>'+c('armando')+'</b><span>Armando</span></div><div class="kpi"><b>'+c('listo')+'</b><span>Listos para salir</span></div><div class="kpi"><b>'+c('reparto')+'</b><span>En reparto</span></div></div>'+
+  '<h3>Por franja</h3><div class="kpis">'+fr+'</div>'+
+  '<h3>Qué necesita atención</h3><div class="card">'+(al.length?al.map(a=>'<div class="alert"'+(a[2]?' data-act="ver" data-id="'+h(a[2])+'" style="cursor:pointer"':'')+'><span class="dot '+a[0]+'"></span><span>'+h(a[1])+'</span></div>').join(''):'<div class="alert"><span class="dot ok"></span><span>Nada pendiente por ahora.</span></div>')+'</div>'+(admin()?'<h3>Administración</h3><div class="btn filebtn">Importar datos iniciales (archivo .json)<input id="imp-file" type="file" accept="application/json,.json" aria-label="Elegir archivo de datos iniciales"></div><p class="note">Carga catálogos, clientes, configuración y saldo de stock. Pisa lo que haya con el mismo nombre.</p>':'');}
+
+function vPedidos(){const q=norm(S.q),l=S.ped.filter(p=>!q||norm(p.cliente+' '+p.id+' '+p.dir+' '+p.tel).includes(q)).slice(0,60);
+  return '<div class="row"><h2 class="grow">Pedidos</h2><button class="btn pri" data-act="nuevo">Nuevo pedido</button></div>'+
+  '<input id="q" type="search" placeholder="Buscar por cliente, código, dirección o teléfono" value="'+h(S.q)+'" aria-label="Buscar pedido">'+
+  '<div class="list">'+(l.length?l.map(p=>pedCard(p)).join(''):'<div class="empty">'+(S.ped.length?'Ningún pedido coincide con la búsqueda.':'Todavía no hay pedidos. Cargá el primero con “Nuevo pedido”.')+'</div>')+'</div>';}
+
+function vArmar(){const p=S.sel&&S.ped.find(x=>x.id===S.sel);
+  if(p&&(p.estado==='nuevo'||p.estado==='armando')){const ls=p.lineas,pend=ls.filter(l=>l.prep==null&&!l.falta).length;
+    return '<div class="row"><button class="btn sm" data-act="salir-armar">← Volver</button><h2 class="grow">'+h(p.cliente)+'</h2></div><p class="note mono">'+h(p.id)+' · '+h(p.franja)+(p.notas?' · '+h(p.notas):'')+'</p>'+
+    '<button class="btn pri" data-act="esc-prod" '+(pend?'':'disabled')+'>Escanear producto ('+pend+' pendiente'+(pend===1?'':'s')+')</button>'+
+    '<div class="card">'+ls.map((l,i)=>'<div class="ln"><div><div class="name">'+h(l.n)+'</div><div class="sub">'+(l.falta?'<span class="pill bad">Faltante</span>':l.prep!=null?'<span class="pill '+(desvio(l)>S.cfg.tolerancia?'warn':'ok')+'">Preparado '+num(l.prep)+' '+l.u+'</span> '+(l.manual?'a mano':'escaneado')+' · '+h(l.por||''):'Pendiente')+'</div></div><div class="q">'+num(l.ped)+' '+l.u+(l.prep==null&&!l.falta?'<br><button class="btn sm bad" data-act="falta" data-i="'+i+'">No hay</button>':'<br><button class="btn sm" data-act="ln-undo" data-i="'+i+'">Corregir</button>')+'</div></div>').join('')+'</div>'+
+    '<button class="btn pri" data-act="cerrar-armado" '+(pend?'disabled':'')+'>Cerrar pedido y etiquetar</button>'+'<button class="btn" data-act="editar" data-id="'+h(p.id)+'">Editar pedido: agregar, quitar o cambiar cantidades</button>';}
+  const l=S.ped.filter(p=>p.estado==='nuevo'||p.estado==='armando').sort((a,b)=>(a.fecha+a.franja).localeCompare(b.fecha+b.franja));
+  return '<div class="row"><h2 class="grow">Armar</h2><button class="btn pri" data-act="esc-ped-armar">Escanear pedido</button></div><p class="note">Ordenados por franja de entrega. Tocá uno para empezar.</p>'+
+  '<div class="list">'+(l.length?l.map(p=>pedCard(p)).join(''):'<div class="empty">No hay pedidos para armar.</div>')+'</div>';}
+
+function vReparto(){const listos=S.ped.filter(p=>p.estado==='listo'),calle=S.ped.filter(p=>p.estado==='reparto'),max=S.cfg.max_tanda;
+  [...S.tanda].forEach(id=>{if(!listos.find(p=>p.id===id))S.tanda.delete(id);});
+  return '<h2>Reparto</h2><h3>Armar tanda (máximo '+max+' pedidos)</h3>'+
+  '<div class="row"><select id="chofer" class="grow" aria-label="Repartidor"><option value="">Quién reparte</option>'+S.cfg.nombres.map(n=>'<option'+(n===S.chofer?' selected':'')+'>'+h(n)+'</option>').join('')+'</select><button class="btn" data-act="esc-tanda">Escanear pedido</button></div>'+
+  '<div class="list">'+(listos.length?listos.map(p=>pedCard(p,'<div class="row"><button class="btn sm '+(S.tanda.has(p.id)?'pri':'')+'" data-act="tg-tanda" data-id="'+h(p.id)+'">'+(S.tanda.has(p.id)?'En la tanda ✓':'Sumar a la tanda')+'</button><span class="sub">'+(p.bultos||1)+' bulto'+((p.bultos||1)>1?'s':'')+' · cobrar '+money(saldo(p))+'</span></div>')).join(''):'<div class="empty">No hay pedidos listos para salir.</div>')+'</div>'+
+  '<button class="btn pri" data-act="salir-tanda" '+(S.tanda.size?'':'disabled')+'>Sale la tanda ('+S.tanda.size+' de '+max+')</button>'+
+  '<h3>En la calle</h3><div class="list">'+(calle.length?calle.map(p=>pedCard(p,'<div class="row"><span class="sub grow">'+h(p.chofer||'')+' · salió '+hm(p.salida)+' · cobrar '+money(saldo(p))+'</span><button class="btn sm pri" data-act="entregar" data-id="'+h(p.id)+'">Entregar</button></div>')).join(''):'<div class="empty">Nadie en reparto.</div>')+'</div>';}
+
+function edad(s){const f=(s.lotes||[]).filter(x=>x.kg>0.001).map(x=>x.f).sort()[0];return f?Math.floor((Date.now()-new Date(f+'T00:00').getTime())/864e5):null;}
+function vStock(){const q=norm(S.q);let rows=S.art.filter(a=>!q||norm(a.n+' '+a.id).includes(q)).map(a=>[a,stk(a.id)]);
+  if(!q)rows=rows.filter(r=>Math.abs(r[1].kg)>0.001||Object.values(r[1].dep||{}).some(v=>Math.abs(v)>0.001));
+  const here=s=>S.dep?((s.dep||{})[S.dep]||0):s.kg;rows.sort((a,b)=>here(a[1])-here(b[1]));
+  const tot=rows.reduce((a,r)=>a+(r[0].u==='kg'?here(r[1]):0),0);
+  return '<div class="row"><h2 class="grow">Stock</h2><button class="btn pri" data-act="esc-art">Escanear</button><button class="btn" data-act="ingreso">Ingreso</button><button class="btn" data-act="ajuste">Ajuste</button></div>'+
+  '<p class="note">'+(S.dep?'Depósito '+h(S.dep):'Todos los depósitos (elegí uno arriba para operar)')+' · '+num(tot,0)+' kg · primero lo que está en negativo</p>'+
+  '<input id="q" type="search" placeholder="Buscar artículo (también para ver su etiqueta QR)" value="'+h(S.q)+'" aria-label="Buscar artículo">'+
+  '<div class="list">'+(rows.length?rows.slice(0,140).map(r=>{const a=r[0],s=r[1],e=edad(s),k=here(s);return '<div class="card tap" data-act="ver-prod" data-id="'+a.id+'"><div class="top"><div class="grow"><div class="name">'+h(a.n)+'</div><div class="sub"><span class="mono">'+a.id+'</span>'+(S.dep?' · total '+num(s.kg)+' '+a.u:'')+(s.ub?' · '+h(s.ub):'')+'</div></div><div class="q mono" style="text-align:right"><b style="color:'+(k<-0.001?'var(--bad)':'var(--ink)')+'">'+num(k)+' '+a.u+'</b>'+(e!=null&&e>0?'<br><span class="pill '+(e>45?'bad':e>30?'warn':'ok')+'">'+e+' días</span>':'')+'</div></div></div>';}).join(''):'<div class="empty">'+(q?'Ningún artículo coincide.':'No hay stock en este depósito.')+'</div>')+'</div>';}
+
+function vCaja(){const d=S.caja.filter(m=>ymd(new Date(m.t))===hoy()),cob=d.filter(m=>m.tipo==='cobro'),pag=d.filter(m=>m.tipo==='pago');
+  const por={};cob.forEach(m=>por[m.medio]=(por[m.medio]||0)+m.monto);
+  const sr={};S.caja.filter(m=>m.medio==='Efectivo'&&m.tipo==='cobro'&&!m.rendido).forEach(m=>sr[m.q]=(sr[m.q]||0)+m.monto);
+  const cc={};S.ped.filter(p=>p.estado==='entregado'&&saldo(p)>0).forEach(p=>{(cc[p.cliente]=cc[p.cliente]||[]).push(p);});
+  const ccs=Object.entries(cc).map(e=>[e[0],e[1],e[1].reduce((a,p)=>a+saldo(p),0)]).sort((a,b)=>b[2]-a[2]);
+  return '<div class="row"><h2 class="grow">Caja</h2><button class="btn pri" data-act="pago">Registrar gasto</button></div>'+
+  '<div class="kpis"><div class="kpi"><b>'+money(cob.reduce((a,m)=>a+m.monto,0))+'</b><span>Cobrado hoy</span></div><div class="kpi"><b>'+money(pag.reduce((a,m)=>a+m.monto,0))+'</b><span>Pagado hoy</span></div>'+Object.entries(por).map(e=>'<div class="kpi"><b>'+money(e[1])+'</b><span>'+h(e[0])+'</span></div>').join('')+'</div>'+
+  '<h3>Efectivo sin rendir</h3><div class="card">'+(Object.keys(sr).length?Object.entries(sr).map(e=>'<div class="ln"><div class="name">'+h(e[0])+'</div><div class="row"><span class="mono">'+money(e[1])+'</span><button class="btn sm" data-act="rendir" data-q="'+h(e[0])+'">Rendir</button></div></div>').join(''):'<p class="note">Todo el efectivo está rendido.</p>')+'</div>'+
+  '<h3>Por cobrar (entregado y sin pagar)</h3><div class="card">'+(ccs.length?ccs.map(e=>'<div class="ln"><div><div class="name">'+h(e[0])+'</div><div class="sub">'+e[1].length+' pedido'+(e[1].length>1?'s':'')+'</div></div><div class="row"><span class="mono">'+money(e[2])+'</span><button class="btn sm" data-act="cobrar" data-id="'+h(e[1][0].id)+'">Cobrar</button></div></div>').join(''):'<p class="note">No hay saldos pendientes de pedidos entregados.</p>')+'</div>'+
+  '<h3>Movimientos de hoy</h3><div class="card">'+(d.length?d.map(m=>'<div class="ln"><div><div class="name">'+h(m.tipo==='cobro'?'Cobro · '+(m.cliente||''):'Gasto · '+(m.cat||''))+'</div><div class="sub">'+hm(m.t)+' · '+h(m.medio)+' · '+h(m.q)+(m.det?' · '+h(m.det):'')+'</div></div><div class="q" style="color:'+(m.tipo==='cobro'?'var(--ok)':'var(--bad)')+'">'+(m.tipo==='cobro'?'+':'−')+money(m.monto)+'</div></div>').join(''):'<p class="note">Sin movimientos hoy.</p>')+'</div>';}
+
+const V={hoy:vHoy,pedidos:vPedidos,armar:vArmar,reparto:vReparto,stock:vStock,caja:vCaja};
+function render(){const a=document.activeElement,keep=a&&a.id&&$('main').contains(a)?[a.id,a.selectionStart]:null;
+  $('main').innerHTML='<div class="list" style="gap:14px">'+V[S.tab]()+'</div>';
+  const n={armar:S.ped.filter(p=>p.estado==='nuevo'||p.estado==='armando').length,reparto:S.ped.filter(p=>p.estado==='listo'||p.estado==='reparto').length};
+  $('nav').innerHTML=TABS.map(t=>'<button data-act="tab" data-t="'+t[0]+'"'+(S.tab===t[0]?' aria-current="page"':'')+'><b>'+(n[t[0]]!=null?n[t[0]]:'·')+'</b>'+t[1]+'</button>').join('');
+  if(keep){const el=$(keep[0]);if(el){el.focus();try{el.setSelectionRange(keep[1],keep[1]);}catch(e){}}}
+  const d=new Date();$('fecha').textContent=d.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});}
+function go(t){S.tab=t;S.q='';try{history.replaceState(null,'','#'+t);}catch(e){}render();window.scrollTo(0,0);}
+A.tab=b=>{S.sel=null;go(b.dataset.t);};
+$('main').addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;render();}});
+$('main').addEventListener('change',async e=>{if(e.target.id==='chofer')S.chofer=e.target.value;
+  if(e.target.id==='imp-file'){const f=e.target.files[0];if(!f)return;const b=$('estado');b.hidden=false;b.textContent='Importando…';try{const body=JSON.parse(await f.text());const r=await api('import',{method:'POST',body:JSON.stringify(body)});b.textContent='Listo: se importaron '+r.importados+' registros. Recargá la página.';}catch(x){b.textContent='No se pudo importar: '+x.message;}}});
+
+/* ---------- pedido nuevo ---------- */
+let N=null;
+A.nuevo=()=>{if(!needYo())return;N={cli:null,lineas:[]};drawNuevo();};
+function drawNuevo(){const tot=N.lineas.reduce((a,l)=>a+l.ped*l.precio,0);
+  open('<h2>Nuevo pedido</h2>'+
+  (N.cli?'<div class="card"><div class="top"><div><div class="name">'+h(N.cli.n)+'</div><div class="sub">Lista '+h(N.cli.l||'nominal')+'</div></div><button class="btn sm" data-act="n-cambiar">Cambiar</button></div></div>'+
+   '<label class="f" for="n-dir">Dirección de entrega<input id="n-dir" value="'+h(N.dir!=null?N.dir:N.cli.d)+'"></label>'+
+   '<div class="two"><label class="f" for="n-tel">Teléfono<input id="n-tel" inputmode="tel" value="'+h(N.tel!=null?N.tel:N.cli.t)+'"></label><label class="f" for="n-fecha">Día de entrega<input id="n-fecha" type="date" value="'+h(N.fecha||hoy())+'"></label></div>'+
+   '<div class="two"><label class="f" for="n-franja">Franja<select id="n-franja">'+S.cfg.franjas.map(f=>'<option'+(f===N.franja?' selected':'')+'>'+h(f)+'</option>').join('')+'</select></label><label class="f" for="n-medio">Cómo paga<select id="n-medio">'+MEDIOS.map(f=>'<option'+(f===N.medio?' selected':'')+'>'+f+'</option>').join('')+'</select></label></div>'+
+   '<h3>Productos</h3>'+(N.lineas.length?'<div class="card">'+N.lineas.map((l,i)=>'<div class="ln"><div><div class="name">'+h(l.n)+'</div><div class="sub">'+num(l.ped)+' '+l.u+' × '+money(l.precio)+(l.co&&l.precio<l.co?' <span class="pill bad">bajo costo</span>':'')+'</div></div><div class="row"><span class="mono">'+money(l.ped*l.precio)+'</span><button class="btn sm bad" data-act="n-del" data-i="'+i+'" aria-label="Quitar '+h(l.n)+'">Quitar</button></div></div>').join('')+'</div>':'')+
+   '<label class="f" for="n-bp">Agregar producto<input id="n-bp" type="search" autocomplete="off" placeholder="Escribí el corte: picada, asado, pollo…"></label><div id="n-sp"></div>'+
+   '<label class="f" for="n-notas">Notas para el armado o la entrega<textarea id="n-notas" rows="2">'+h(N.notas||'')+'</textarea></label>'+
+   '<div id="n-msg"></div><div class="row"><b class="grow mono">Total estimado '+money(tot)+'</b><button class="btn" data-act="close">Cancelar</button><button class="btn pri" data-act="n-ok" '+(N.lineas.length?'':'disabled')+'>Guardar pedido</button></div>'
+  :'<label class="f" for="n-bc">Cliente<input id="n-bc" type="search" autocomplete="off" placeholder="Nombre o teléfono"></label><div id="n-sc"></div><button class="btn" data-act="n-cli-nuevo">Cliente nuevo</button><button class="btn" data-act="close">Cancelar</button>'));
+  const bc=$('n-bc');if(bc){bc.focus();bc.addEventListener('input',()=>{const q=norm(bc.value);$('n-sc').innerHTML=q.length<2?'':'<div class="sug">'+S.cli.filter(c=>norm(c.n+' '+c.t).includes(q)).slice(0,12).map(c=>'<button data-act="n-cli" data-id="'+h(c.id)+'">'+h(c.n)+(c.d?' · '+h(c.d):'')+'</button>').join('')+'</div>';});}
+  const bp=$('n-bp');if(bp)bp.addEventListener('input',()=>{const q=norm(bp.value);$('n-sp').innerHTML=q.length<2?'':'<div class="sug">'+S.prod.filter(p=>norm(p.n+' '+p.c).includes(q)).slice(0,12).map(p=>'<button data-act="n-prod" data-id="'+p.id+'">'+h(p.n)+' · '+money(precio(p,N.cli))+' / '+p.u+'</button>').join('')+'</div>';});}
+function keepN(){['dir','tel','fecha','franja','medio','notas'].forEach(k=>{const e=$('n-'+k);if(e)N[k]=e.value;});}
+A['n-cli']=b=>{N.cli=S.cli.find(c=>c.id===b.dataset.id);drawNuevo();};
+A['n-cambiar']=()=>{keepN();N.cli=null;N.dir=N.tel=null;drawNuevo();};
+A['n-cli-nuevo']=()=>{open('<h2>Cliente nuevo</h2><label class="f" for="c-n">Nombre y apellido<input id="c-n"></label><label class="f" for="c-t">Teléfono (obligatorio)<input id="c-t" inputmode="tel"></label><label class="f" for="c-d">Dirección (obligatoria)<input id="c-d"></label><div id="c-msg"></div><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="c-ok">Guardar cliente</button></div>');};
+A['c-ok']=()=>{const n=$('c-n').value.trim(),t=$('c-t').value.trim(),d=$('c-d').value.trim();if(!n||!t||!d){$('c-msg').innerHTML='<div class="msg bad">Nombre, teléfono y dirección son obligatorios.</div>';return;}
+  const dup=S.cli.find(c=>c.t&&c.t.replace(/\D/g,'').slice(-8)===t.replace(/\D/g,'').slice(-8));if(dup&&!$('c-msg').dataset.ok){$('c-msg').dataset.ok=1;$('c-msg').innerHTML='<div class="msg warn">Ese teléfono ya es de '+h(dup.n)+'. Tocá Guardar otra vez solo si es otra persona.</div>';return;}
+  const id='N'+rid(6),c={n:n,t:t,d:d,l:'VENTA RON KOSHER'};S.db.doc('clientes/'+id).set(c).catch(fail);N.cli=Object.assign({id:id},c);drawNuevo();};
+A['n-prod']=b=>{keepN();const p=S.pmap.get(b.dataset.id);open('<h2>'+h(p.n)+'</h2><p class="note">'+money(precio(p,N.cli))+' por '+p.u+'</p><label class="f" for="np-q">Cantidad en '+(p.u==='kg'?'kilos':'unidades')+'<input id="np-q" inputmode="decimal" placeholder="'+(p.u==='kg'?'1,5':'1')+'"></label><div class="row"><button class="btn grow" data-act="n-back">Volver</button><button class="btn pri grow" data-act="np-ok" data-id="'+p.id+'">Agregar</button></div>');$('np-q').focus();};
+A['n-back']=drawNuevo;
+A['np-ok']=b=>{const p=S.pmap.get(b.dataset.id),q=parseFloat($('np-q').value.replace(',','.'));if(!(q>0))return;N.lineas.push({pid:p.id,n:p.n,u:p.u,c:p.c,ped:q,precio:precio(p,N.cli),co:p.co});drawNuevo();};
+A['n-del']=b=>{keepN();N.lineas.splice(+b.dataset.i,1);drawNuevo();};
+A['n-ok']=()=>{keepN();if(!N.dir||!N.tel){$('n-msg').innerHTML='<div class="msg bad">Falta la dirección o el teléfono. Sin eso no se puede entregar.</div>';return;}
+  const m=/^(\d+)/.exec(N.franja||''),tarde=N.fecha===hoy()&&m&&new Date().getHours()>=+m[1]-2;
+  if(tarde&&!N.okTarde){N.okTarde=true;$('n-msg').innerHTML='<div class="msg warn">Esa franja ya pasó el corte de 2 horas. Elegí otra franja, o tocá Guardar otra vez y queda registrado que lo autorizó '+h(S.yo)+'.</div>';return;}
+  const id=pad(new Date().getMonth()+1)+pad(new Date().getDate())+'-'+rid(4);
+  const p={cliente:N.cli.n,cid:N.cli.id,dir:N.dir,tel:N.tel,fecha:N.fecha||hoy(),franja:N.franja,medio:N.medio,notas:N.notas||'',estado:'nuevo',creado:Date.now(),cobrado:0,
+    lineas:N.lineas.map(l=>({pid:l.pid,n:l.n,u:l.u,c:l.c,ped:l.ped,precio:l.precio})),ev:[{t:Date.now(),q:S.yo,x:'Cargó el pedido'+(tarde?' fuera del corte de 2 horas':'')}]};
+  S.db.doc('pedidos/'+id).set(p).catch(fail);N=null;close();go('pedidos');};
+
+/* ---------- detalle y reclamos ---------- */
+A.ver=b=>{const p=S.ped.find(x=>x.id===b.dataset.id);if(!p)return;
+  if(S.tab==='armar'&&(p.estado==='nuevo'||p.estado==='armando')){startArmar(p);return;}
+  open('<div class="top row"><h2 class="grow">'+h(p.cliente)+'</h2><span class="pill '+p.estado+'">'+EST[p.estado]+'</span></div>'+
+  '<p class="note">'+h(p.dir)+' · '+h(p.tel)+'<br>Entrega '+h(p.fecha)+', franja '+h(p.franja)+' · '+h(p.medio)+(p.notas?'<br>Notas: '+h(p.notas):'')+'</p>'+
+  '<h3>Pedido contra preparado</h3><div class="card">'+p.lineas.map(l=>'<div class="ln"><div><div class="name">'+h(l.n)+'</div><div class="sub">'+(l.falta?'<span class="pill bad">Faltante</span>':l.prep==null?'Sin preparar':'<span class="pill '+(desvio(l)>S.cfg.tolerancia?'warn':'ok')+'">'+(desvio(l)>S.cfg.tolerancia?'Desvío '+num(desvio(l),0)+'%':'Coincide')+'</span> '+(l.manual?'cargado a mano':'producto escaneado')+' · '+h(l.por||'')+(l.lote?' · lote '+h(l.lote):''))+'</div></div><div class="q">pidió '+num(l.ped)+' '+l.u+'<br>'+(l.prep!=null?'salió '+num(l.prep)+' '+l.u:'')+'</div></div>').join('')+
+  '<div class="ln"><div class="name">Total</div><div class="q">'+money(totalPed(p))+'<br>cobrado '+money(p.cobrado)+'</div></div></div>'+
+  (p.reclamo?'<div class="msg '+(p.reclamoCerrado?'ok':'bad')+'">Reclamo: '+h(p.reclamo)+(p.reclamoCerrado?' · Resuelto: '+h(p.reclamoCerrado):'')+'</div>':'')+
+  '<h3>Historial: quién hizo qué y cuándo</h3><div class="card tl">'+(p.ev||[]).map(e=>'<div><time>'+hm(e.t)+'</time><span><b>'+h(e.q)+'</b> · '+h(e.x)+'</span></div>').join('')+'</div>'+
+  '<h3>Foto de la entrega</h3><div id="d-foto"><p class="note">'+(p.estado==='entregado'?'Buscando la foto…':'Se saca al entregar.')+'</p></div>'+
+  '<h3>Etiqueta del pedido</h3>'+qrBox('RK:P:'+p.id)+'<button class="btn sm" data-act="bajar-qr" data-c="RK:P:'+h(p.id)+'" data-n="'+h(p.cliente)+'">Guardar etiqueta</button>'+
+  '<button class="btn" data-act="editar" data-id="'+h(p.id)+'">Editar pedido</button><div class="row">'+(p.estado!=='anulado'&&p.estado!=='entregado'?'<button class="btn bad grow" data-act="anular" data-id="'+h(p.id)+'">Anular</button>':'')+
+  (p.reclamo&&!p.reclamoCerrado?'<button class="btn grow" data-act="reclamo-fin" data-id="'+h(p.id)+'">Cerrar reclamo</button>':'<button class="btn grow" data-act="reclamo" data-id="'+h(p.id)+'">Registrar reclamo</button>')+'<button class="btn pri grow" data-act="close">Cerrar</button></div>');
+  if(p.estado==='entregado')S.db.doc('fotos/'+p.id).get().then(s=>{const el=$('d-foto');if(!el)return;el.innerHTML=s.exists&&s.data().img?'<img class="foto" alt="Foto de la entrega a '+h(p.cliente)+'" src="'+s.data().img+'"><p class="note">Recibió: '+h(p.recibio||'sin dato')+'</p>':'<p class="note">Este pedido se entregó sin foto.</p>';}).catch(()=>{});};
+function ask(titulo,label,act,id,oblig){open('<h2>'+h(titulo)+'</h2><label class="f" for="ask-t">'+h(label)+'<textarea id="ask-t" rows="3"></textarea></label><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="'+act+'" data-id="'+h(id)+'">Guardar</button></div>');}
+const gp=b=>S.ped.find(x=>x.id===b.dataset.id);
+A.anular=b=>{if(needYo())ask('Anular pedido','Motivo (obligatorio)','anular-ok',b.dataset.id);else close();};
+A['anular-ok']=b=>{const p=gp(b),t=$('ask-t').value.trim();if(!t)return;if(p.listoAt)p.lineas.forEach(l=>{if(l.art&&l.prep!=null)consumir(l.art,-l.prep,p.dep);});save(p,{estado:'anulado',listoAt:0,ev:ev(p,'Anuló el pedido: '+t+(p.listoAt?'. La mercadería volvió al stock':''))});close();};
+A.reclamo=b=>{if(needYo())ask('Registrar reclamo','Qué dice el cliente','reclamo-ok',b.dataset.id);else close();};
+A['reclamo-ok']=b=>{const p=gp(b),t=$('ask-t').value.trim();if(!t)return;save(p,{reclamo:t,reclamoCerrado:'',ev:ev(p,'Registró un reclamo: '+t)});close();};
+A['reclamo-fin']=b=>{if(needYo())ask('Cerrar reclamo','Qué se verificó y cómo se resolvió','reclamo-fin-ok',b.dataset.id);else close();};
+A['reclamo-fin-ok']=b=>{const p=gp(b),t=$('ask-t').value.trim();if(!t)return;save(p,{reclamoCerrado:t,ev:ev(p,'Cerró el reclamo: '+t)});close();};
+A['bajar-qr']=async b=>{  const c=document.createElement('canvas');c.width=600;c.height=400;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,600,400);const i=new Image();i.src=qrUrl(b.dataset.c);await new Promise(r=>{i.onload=r;});x.imageSmoothingEnabled=false;x.drawImage(i,20,40,320,320);
+  x.fillStyle='#000';x.font='bold 30px sans-serif';const w=String(b.dataset.n).split(' ');let y=110,l='';w.forEach(k=>{if((l+' '+k).length>13){x.fillText(l,360,y);y+=38;l=k;}else l=(l+' '+k).trim();});x.fillText(l,360,y);x.font='24px monospace';x.fillText(b.dataset.c.split(':').pop(),360,330);
+  c.toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='etiqueta-'+b.dataset.c.split(':').pop()+'.png';document.body.appendChild(a);a.click();a.remove();},'image/png');};
+
+/* ---------- editar pedido: siempre se puede, y siempre queda en el historial ---------- */
+let Ed=null;
+const admin=()=>!!(S.me&&S.me.admin);
+A.editar=b=>{if(!needYo()){close();return;}const p=gp(b);
+  if((p.estado==='entregado'||p.estado==='anulado')&&!admin()){open('<div class="msg warn">Un pedido entregado o anulado solo lo puede cambiar '+h((S.cfg.admins||['Eric']).join(' o '))+'.</div><button class="btn pri" data-act="close">Entendido</button>');return;}
+  Ed={id:p.id,dir:p.dir,tel:p.tel,fecha:p.fecha,franja:p.franja,medio:p.medio,notas:p.notas||'',estado:p.estado,lineas:p.lineas.map(l=>Object.assign({},l))};drawEd();};
+function keepEd(){['dir','tel','fecha','franja','medio','notas','estado'].forEach(k=>{const e=$('e-'+k);if(e)Ed[k]=e.value;});
+  Ed.lineas.forEach((l,i)=>{const a=$('e-ped'+i),b=$('e-prep'+i);if(a){const v=parseFloat(a.value.replace(',','.'));if(v>0)l.ped=v;}
+    if(b){const t=b.value.trim();if(t===''){delete l.prep;}else{const v=parseFloat(t.replace(',','.'));if(v>=0){l.prep=v;delete l.falta;}}}});}
+function drawEd(){const p=S.ped.find(x=>x.id===Ed.id);
+  open('<h2>Editar pedido</h2><p class="note">'+h(p.cliente)+' · <span class="mono">'+h(p.id)+'</span>. Todo cambio queda en el historial con tu nombre.</p>'+
+  '<label class="f" for="e-dir">Dirección<input id="e-dir" value="'+h(Ed.dir)+'"></label>'+
+  '<div class="two"><label class="f" for="e-tel">Teléfono<input id="e-tel" inputmode="tel" value="'+h(Ed.tel)+'"></label><label class="f" for="e-fecha">Día de entrega<input id="e-fecha" type="date" value="'+h(Ed.fecha)+'"></label></div>'+
+  '<div class="two"><label class="f" for="e-franja">Franja<select id="e-franja">'+S.cfg.franjas.map(f=>'<option'+(f===Ed.franja?' selected':'')+'>'+h(f)+'</option>').join('')+'</select></label><label class="f" for="e-medio">Cómo paga<select id="e-medio">'+MEDIOS.map(f=>'<option'+(f===Ed.medio?' selected':'')+'>'+f+'</option>').join('')+'</select></label></div>'+
+  (admin()?'<label class="f" for="e-estado">Estado (solo '+h((S.cfg.admins||['Eric']).join(', '))+')<select id="e-estado">'+Object.keys(EST).map(k=>'<option value="'+k+'"'+(k===Ed.estado?' selected':'')+'>'+EST[k]+'</option>').join('')+'</select></label>':'')+
+  '<h3>Productos</h3><div class="card">'+Ed.lineas.map((l,i)=>'<div style="padding:9px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px"><div class="row"><div class="name grow">'+h(l.n)+(l.falta?' <span class="pill bad">Faltante</span>':'')+'</div><button class="btn sm bad" data-act="e-del" data-i="'+i+'">Quitar</button></div><div class="two"><label class="f" for="e-ped'+i+'">Pedido ('+l.u+')<input id="e-ped'+i+'" inputmode="decimal" value="'+String(l.ped).replace('.',',')+'"></label><label class="f" for="e-prep'+i+'">Preparado ('+l.u+')<input id="e-prep'+i+'" inputmode="decimal" placeholder="sin preparar" value="'+(l.prep!=null?String(l.prep).replace('.',','):'')+'"></label></div></div>').join('')+'</div>'+
+  '<label class="f" for="e-bp">Agregar producto<input id="e-bp" type="search" autocomplete="off" placeholder="Escribí el corte"></label><div id="e-sp"></div>'+
+  '<label class="f" for="e-notas">Notas<textarea id="e-notas" rows="2">'+h(Ed.notas)+'</textarea></label>'+
+  '<div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="e-ok">Guardar cambios</button></div>');
+  const bp=$('e-bp'),cli=S.cli.find(c=>c.id===p.cid);bp.addEventListener('input',()=>{const q=norm(bp.value);$('e-sp').innerHTML=q.length<2?'':'<div class="sug">'+S.prod.filter(x=>norm(x.n+' '+x.c).includes(q)).slice(0,12).map(x=>'<button data-act="e-prod" data-id="'+x.id+'">'+h(x.n)+' · '+money(precio(x,cli))+' / '+x.u+'</button>').join('')+'</div>';});}
+A['e-prod']=b=>{keepEd();const p=S.ped.find(x=>x.id===Ed.id),x=S.pmap.get(b.dataset.id),cli=S.cli.find(c=>c.id===p.cid);Ed.lineas.push({pid:x.id,n:x.n,u:x.u,c:x.c,ped:1,precio:precio(x,cli)});drawEd();};
+A['e-del']=b=>{keepEd();Ed.lineas.splice(+b.dataset.i,1);drawEd();};
+A['e-ok']=()=>{keepEd();const p=S.ped.find(x=>x.id===Ed.id);if(!p||!Ed.lineas.length)return;const ch=[],lab={dir:'dirección',tel:'teléfono',fecha:'día',franja:'franja',medio:'forma de pago',notas:'notas'};
+  Object.keys(lab).forEach(k=>{if((p[k]||'')!==(Ed[k]||''))ch.push(lab[k]+': '+(p[k]||'vacío')+' → '+(Ed[k]||'vacío'));});
+  const olds=p.lineas.slice();Ed.lineas.forEach(l=>{const j=olds.findIndex(o=>o.pid===l.pid);if(j<0){ch.push('agregó '+l.n+' '+num(l.ped)+' '+l.u);if(l.prep!=null){l.manual=true;l.por=S.yo;}return;}const o=olds.splice(j,1)[0];
+    if(o.ped!==l.ped)ch.push(l.n+' pedido '+num(o.ped)+' → '+num(l.ped));
+    if((o.prep==null?null:o.prep)!==(l.prep==null?null:l.prep)){ch.push(l.n+' preparado '+(o.prep==null?'sin preparar':num(o.prep))+' → '+(l.prep==null?'sin preparar':num(l.prep)));l.manual=true;l.por=S.yo;if(l.prep==null)delete l.art;}});
+  olds.forEach(o=>ch.push('quitó '+o.n));
+  let estado=admin()?Ed.estado:p.estado;if(estado==='listo'&&Ed.lineas.some(l=>l.prep==null&&!l.falta))estado='armando';
+  if(estado!==p.estado)ch.push('estado '+EST[p.estado]+' → '+EST[estado]);
+  if(!ch.length){Ed=null;close();return;}
+  const closed=!!p.listoAt,reab=closed&&(estado==='nuevo'||estado==='armando'||estado==='anulado');
+  if(closed){const old={},nw={};p.lineas.forEach(l=>{if(l.art&&l.prep!=null)old[l.art]=(old[l.art]||0)+l.prep;});
+    if(!reab)Ed.lineas.forEach(l=>{if(l.prep!=null){if(!l.art)l.art=(S.pmap.get(l.pid)||{}).r||'';if(l.art)nw[l.art]=(nw[l.art]||0)+l.prep;}});
+    new Set(Object.keys(old).concat(Object.keys(nw))).forEach(a=>{const d=+((nw[a]||0)-(old[a]||0)).toFixed(3);if(d)consumir(a,d,p.dep);});ch.push('stock ajustado');}
+  save(p,{dir:Ed.dir,tel:Ed.tel,fecha:Ed.fecha,franja:Ed.franja,medio:Ed.medio,notas:Ed.notas,lineas:Ed.lineas,estado:estado,listoAt:reab?0:(p.listoAt||0),ev:ev(p,'Editó el pedido: '+ch.join('; '))});Ed=null;close();};
+A['ln-undo']=b=>{const p=S.ped.find(x=>x.id===S.sel),i=+b.dataset.i,ls=p.lineas.slice(),l=Object.assign({},ls[i]),antes=l.falta?'faltante':num(l.prep)+' '+l.u;delete l.prep;delete l.falta;delete l.art;delete l.manual;ls[i]=l;save(p,{lineas:ls,ev:ev(p,'Corrigió '+l.n+' (estaba: '+antes+'). Vuelve a pendiente')});};
+
+/* ---------- armado ---------- */
+function startArmar(p){if(!needYo())return;S.sel=p.id;if(p.estado==='nuevo')save(p,{estado:'armando',armador:S.yo,ev:ev(p,'Empezó a armar')});S.tab='armar';close();render();}
+A['salir-armar']=()=>{S.sel=null;render();};
+A['esc-ped-armar']=()=>{if(!needYo())return;const l=S.ped.filter(p=>p.estado==='nuevo'||p.estado==='armando');scan('Escanear pedido','P',l.map(p=>({id:p.id,n:p.cliente+' · '+p.id})),c=>{const p=l.find(x=>x.id===c);if(p)startArmar(p);else open('<div class="msg bad">El pedido '+h(c)+' no está para armar.</div><button class="btn" data-act="close">Cerrar</button>');});};
+A['esc-prod']=()=>{const p=S.ped.find(x=>x.id===S.sel),pend=p.lineas.map((l,i)=>[l,i]).filter(x=>x[0].prep==null&&!x[0].falta),rOf=l=>(S.pmap.get(l.pid)||{}).r||'';
+  scan('Escanear producto','A',pend.map(x=>({id:'L'+x[1],n:x[0].n+' · '+num(x[0].ped)+' '+x[0].u})),(c,manual)=>{let i=-1,art='';const m=/^L(\d+)$/.exec(c);
+    if(manual&&m){i=+m[1];art=rOf(p.lineas[i]);}else{art=c.split(':')[0];manual=false;i=p.lineas.findIndex(l=>l.prep==null&&!l.falta&&rOf(l)===art);}
+    const a=S.amap.get(art);
+    if(i<0){save(p,{ev:ev(p,'Escaneó un artículo que no va en este pedido: '+(a?a.n:c))});open('<div class="msg bad">ALTO. '+h(a?a.n:'El código '+c)+' no corresponde a ningún producto pendiente de este pedido.</div><p class="note">Este pedido espera: '+h(pend.map(x=>{const e=S.amap.get(rOf(x[0]));return e?e.n:x[0].n+' (sin artículo asignado)';}).join(', '))+'. Taham, Blue y común no se reemplazan entre sí. Devolvelo a su lugar. Quedó registrado.</p><button class="btn pri" data-act="close">Entendido</button>');return;}
+    const l=p.lineas[i];open('<h2>'+h(l.n)+'</h2><p class="note">'+(manual?'Cargado a mano, sin escanear. ':'Producto correcto ('+h(a.n)+'). ')+'El cliente pidió '+num(l.ped)+' '+l.u+'.</p><label class="f" for="ar-q">'+(l.u==='kg'?'Peso real en la balanza (kg)':'Cantidad real')+'<input id="ar-q" inputmode="decimal" value="'+(l.u==='kg'?'':l.ped)+'"></label><div id="ar-msg"></div><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="ar-ok" data-i="'+i+'" data-a="'+h(art)+'" data-m="'+(manual?1:'')+'">Confirmar</button></div>');$('ar-q').focus();});};
+A['ar-ok']=b=>{const p=S.ped.find(x=>x.id===S.sel),i=+b.dataset.i,q=parseFloat($('ar-q').value.replace(',','.'));if(!(q>0))return;const l=p.lineas[i],d=Math.abs(q-l.ped)/l.ped*100,tol=S.cfg.tolerancia;
+  if(d>tol&&!$('ar-msg').dataset.ok){$('ar-msg').dataset.ok=1;$('ar-msg').innerHTML='<div class="msg warn">Hay '+num(d,0)+'% de diferencia con lo pedido (se acepta hasta '+tol+'%). Corregí el peso, o tocá Confirmar otra vez si el cliente ya lo aceptó.</div>';return;}
+  const ls=p.lineas.slice();ls[i]=Object.assign({},l,{prep:q,art:b.dataset.a||'',manual:!!b.dataset.m,por:S.yo,t:Date.now()});
+  save(p,{lineas:ls,ev:ev(p,'Preparó '+l.n+': '+num(q)+' '+l.u+(b.dataset.m?' (a mano)':' (escaneado)')+(d>tol?', con desvío de '+num(d,0)+'%':''))});close();};
+A.falta=b=>{const p=S.ped.find(x=>x.id===S.sel),i=+b.dataset.i,ls=p.lineas.slice();ls[i]=Object.assign({},ls[i],{falta:true,por:S.yo});save(p,{lineas:ls,ev:ev(p,'Marcó faltante: '+ls[i].n+'. Hay que avisar al vendedor.')});};
+function consumir(aid,kg,dep){dep=dep||S.dep||'SIN DEPÓSITO';if(!aid||!S.amap.has(aid))return '';const s=stk(aid),lotes=(s.lotes||[]).sort((a,b)=>String(a.f).localeCompare(String(b.f)));let r=kg;const us=[];
+  lotes.forEach(x=>{if(r<=0||x.kg<=0)return;const t=Math.min(x.kg,r);x.kg=+(x.kg-t).toFixed(3);r-=t;us.push(x.l);});
+  s.kg=+(s.kg-kg).toFixed(3);s.dep=s.dep||{};s.dep[dep]=+((s.dep[dep]||0)-kg).toFixed(3);s.lotes=lotes.filter(x=>x.kg>0.001);S.stock.set(aid,s);S.db.doc('stock/'+aid).set(s).catch(fail);return us.join(', ');}
+A['cerrar-armado']=()=>{if(!needDep())return;open('<h2>Cerrar pedido</h2><label class="f" for="ce-b">Cantidad de bultos<input id="ce-b" inputmode="numeric" value="1"></label><p class="note">Al cerrar se descuenta el stock del depósito '+h(S.dep)+' y el pedido pasa a Reparto.</p><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="ce-ok">Cerrar y ver etiqueta</button></div>');};
+A['ce-ok']=()=>{const p=S.ped.find(x=>x.id===S.sel),bu=Math.max(1,parseInt($('ce-b').value)||1);
+  const ls=p.lineas.map(l=>l.falta||l.prep==null?l:Object.assign({},l,{lote:consumir(l.art,l.prep)}));
+  save(p,{lineas:ls,estado:'listo',bultos:bu,listoAt:Date.now(),dep:S.dep,ev:ev(p,'Cerró el armado en '+S.dep+': '+bu+' bulto'+(bu>1?'s':''))});S.sel=null;
+  open('<h2>Pegá esta etiqueta en cada bulto</h2><p class="note">'+h(p.cliente)+' · '+bu+' bulto'+(bu>1?'s':'')+' · '+h(p.franja)+'</p>'+qrBox('RK:P:'+p.id)+'<div class="row"><button class="btn grow" data-act="bajar-qr" data-c="RK:P:'+h(p.id)+'" data-n="'+h(p.cliente)+'">Guardar etiqueta</button><button class="btn pri grow" data-act="close">Listo</button></div>');render();};
+
+/* ---------- reparto ---------- */
+function addTanda(id){if(S.tanda.has(id)){S.tanda.delete(id);}else{if(S.tanda.size>=S.cfg.max_tanda){open('<div class="msg bad">La tanda ya tiene '+S.cfg.max_tanda+' pedidos. Que salga y armá otra.</div><button class="btn pri" data-act="close">Entendido</button>');return;}S.tanda.add(id);}render();}
+A['tg-tanda']=(b,e)=>{e.stopPropagation();addTanda(b.dataset.id);};
+A['esc-tanda']=()=>scan('Escanear pedido para la tanda','P',[],c=>{const p=S.ped.find(x=>x.id===c);if(p&&p.estado==='listo'){if(!S.tanda.has(c))addTanda(c);}else open('<div class="msg bad">El pedido '+h(c)+' '+(p?'está '+EST[p.estado].toLowerCase()+', no listo para salir':'no existe')+'.</div><button class="btn pri" data-act="close">Entendido</button>');});
+A['salir-tanda']=()=>{if(!needYo())return;if(!S.chofer){open('<div class="msg bad">Elegí quién reparte antes de sacar la tanda.</div><button class="btn pri" data-act="close">Entendido</button>');return;}
+  const tid=rid(4),now=Date.now();S.tanda.forEach(id=>{const p=S.ped.find(x=>x.id===id);if(p)save(p,{estado:'reparto',chofer:S.chofer,tanda:tid,salida:now,ev:ev(p,'Salió a reparto con '+S.chofer+' (tanda '+tid+')')});});S.tanda.clear();render();};
+let E=null;
+A.entregar=(b,e)=>{e.stopPropagation();if(!needYo())return;const p=gp(b);
+  scan('Escanear la etiqueta en la puerta','P',[{id:p.id,n:'Sin etiqueta: '+p.cliente}],(c,manual)=>{
+    if(c!==p.id){const o=S.ped.find(x=>x.id===c);save(p,{ev:ev(p,'Intentó entregar con la etiqueta de otro pedido ('+c+')')});open('<div class="msg bad">ALTO. Ese bulto es de '+h(o?o.cliente:c)+', no de '+h(p.cliente)+'.</div><p class="note">No lo entregues. Quedó registrado.</p><button class="btn pri" data-act="close">Entendido</button>');return;}
+    E={id:p.id,manual:manual,img:''};const s=saldo(p);
+    open('<h2>Entregar a '+h(p.cliente)+'</h2><p class="note">'+h(p.dir)+' · '+(p.bultos||1)+' bulto'+((p.bultos||1)>1?'s':'')+'</p>'+
+    '<div class="btn filebtn">Sacar foto de la entrega<input id="en-file" type="file" accept="image/*" capture="environment" aria-label="Sacar foto de la entrega"></div><div id="en-prev"></div>'+
+    '<label class="f" for="en-rec">Quién recibió<input id="en-rec" placeholder="Nombre, o portería"></label>'+
+    '<div class="two"><label class="f" for="en-medio">Cobro<select id="en-medio">'+['No cobré'].concat(MEDIOS.slice(0,3)).map(m=>'<option'+(m===p.medio?' selected':'')+'>'+m+'</option>').join('')+'</select></label><label class="f" for="en-monto">Monto cobrado<input id="en-monto" inputmode="numeric" value="'+(p.medio==='Cuenta corriente'||p.medio==='Ya pagado'?0:Math.round(s))+'"></label></div>'+
+    '<p class="note">Saldo del pedido: '+money(s)+' · forma acordada: '+h(p.medio)+'</p><div id="en-msg"></div><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="en-ok">Confirmar entrega</button></div>');
+    $('en-file').addEventListener('change',async ev2=>{const f=ev2.target.files[0];if(!f)return;try{const c2=toCanvas(await loadImg(f),560);E.img=c2.toDataURL('image/jpeg',0.55);$('en-prev').innerHTML='<img class="foto" alt="Foto de la entrega" src="'+E.img+'">';}catch(_){}});});};
+A['en-ok']=()=>{const p=S.ped.find(x=>x.id===E.id),medio=$('en-medio').value,monto=medio==='No cobré'?0:(parseFloat($('en-monto').value)||0);
+  if(!E.img&&!$('en-msg').dataset.ok){$('en-msg').dataset.ok=1;$('en-msg').innerHTML='<div class="msg warn">Falta la foto. Sin foto no se puede verificar un reclamo. Sacala, o tocá Confirmar otra vez y queda registrado que se entregó sin foto.</div>';return;}
+  const now=Date.now();if(E.img)S.db.doc('fotos/'+p.id).set({img:E.img,t:now,q:S.yo}).catch(fail);
+  if(monto>0)S.db.collection('caja').add({t:now,tipo:'cobro',monto:monto,medio:medio,cliente:p.cliente,ped:p.id,q:S.yo,rendido:false}).catch(fail);
+  save(p,{estado:'entregado',entregadoAt:now,recibio:$('en-rec').value.trim(),cobrado:(p.cobrado||0)+monto,ev:ev(p,'Entregó'+(E.manual?' sin escanear la etiqueta':' escaneando la etiqueta')+(E.img?', con foto':', SIN foto')+'. Recibió: '+($('en-rec').value.trim()||'sin dato')+'. '+(monto>0?'Cobró '+money(monto)+' en '+medio.toLowerCase():'No cobró'))});
+  E=null;close();};
+
+/* ---------- stock ---------- */
+A['esc-art']=()=>pickProd(p=>A['ver-prod']({dataset:{id:p.id}}),'Escanear la etiqueta del artículo');
+A['art-in']=b=>{if(!needYo()||!needDep()){close();return;}S.pre=b.dataset.id;A.ingreso();};
+A['art-aj']=b=>{if(!needYo()||!needDep()){close();return;}S.pre=b.dataset.id;A.ajuste();};
+function pickProd(act,titulo){if(S.pre){const p0=S.amap.get(S.pre);S.pre=null;if(p0){act(p0);return;}}scan(titulo,'A',S.art.map(p=>({id:p.id,n:p.n})),c=>{const p=S.amap.get(c.split(':')[0]);if(!p){open('<div class="msg bad">No existe un artículo con el código '+h(c)+'.</div><button class="btn pri" data-act="close">Entendido</button>');return;}act(p);});}
+A.ingreso=()=>{if(!needYo()||!needDep())return;pickProd(p=>{open('<h2>Ingreso: '+h(p.n)+'</h2><p class="note">Entra al depósito '+h(S.dep)+'.</p><div class="two"><label class="f" for="in-kg">'+(p.u==='kg'?'Kilos que entran':'Unidades')+'<input id="in-kg" inputmode="decimal"></label><label class="f" for="in-or">Kilos de origen (si es producción)<input id="in-or" inputmode="decimal"></label></div>'+
+  '<div class="two"><label class="f" for="in-lote">Lote<input id="in-lote" placeholder="CARINDU 30/10"></label><label class="f" for="in-f">Fecha de faena o producción<input id="in-f" type="date" value="'+hoy()+'"></label></div>'+
+  '<div class="two"><label class="f" for="in-prov">Proveedor<input id="in-prov"></label><label class="f" for="in-sup">Supervisión<select id="in-sup"><option>KM</option><option>TAHAM</option><option>AK</option><option>Otra</option></select></label></div>'+
+  '<label class="f" for="in-ub">Dónde se guarda<input id="in-ub" placeholder="Estantería 3, nivel 2"></label><div id="in-msg"></div><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="in-ok" data-id="'+p.id+'">Guardar ingreso</button></div>');$('in-kg').focus();},'Escanear el artículo que entra');};
+A['in-ok']=b=>{const p=S.amap.get(b.dataset.id),kg=parseFloat($('in-kg').value.replace(',','.')),lote=$('in-lote').value.trim(),sup=$('in-sup').value;
+  if(!(kg>0)||!lote){$('in-msg').innerHTML='<div class="msg bad">Faltan los kilos o el lote. Sin lote no hay trazabilidad.</div>';return;}
+  if(!!p.t!==(sup==='TAHAM')&&!$('in-msg').dataset.ok){$('in-msg').dataset.ok=1;$('in-msg').innerHTML='<div class="msg warn">La supervisión ('+h(sup)+') no coincide con el artículo ('+(p.t?'Taham':'no Taham')+'). Revisá. Si está bien, tocá Guardar otra vez.</div>';return;}
+  const s=stk(p.id),or=parseFloat($('in-or').value.replace(',','.'))||0,ub=$('in-ub').value.trim();
+  s.kg=+(s.kg+kg).toFixed(3);s.dep=s.dep||{};s.dep[S.dep]=+((s.dep[S.dep]||0)+kg).toFixed(3);s.lotes=(s.lotes||[]).concat([{l:lote,kg:kg,f:$('in-f').value||hoy(),sup:sup}]);if(ub)s.ub=ub;
+  S.db.doc('stock/'+p.id).set(s).catch(fail);S.db.collection('movs').add({t:Date.now(),tipo:or?'produccion':'ingreso',aid:p.id,n:p.n,kg:kg,origen:or,lote:lote,sup:sup,prov:$('in-prov').value.trim(),ub:ub,dep:S.dep,q:S.yo}).catch(fail);close();};
+A.ajuste=()=>{if(!needYo()||!needDep())return;pickProd(p=>{const s=stk(p.id);open('<h2>Ajuste: '+h(p.n)+'</h2><p class="note">En '+h(S.dep)+' el sistema dice '+num((s.dep||{})[S.dep]||0)+' '+p.u+'.</p><label class="f" for="aj-kg">Cuánto hay de verdad en este depósito (contado)<input id="aj-kg" inputmode="decimal"></label><label class="f" for="aj-m">Motivo (obligatorio): conteo, merma, vencido, error de carga…<input id="aj-m"></label><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="aj-ok" data-id="'+p.id+'">Guardar ajuste</button></div>');$('aj-kg').focus();},'Escanear el artículo a ajustar');};
+A['aj-ok']=b=>{const p=S.amap.get(b.dataset.id),real=parseFloat($('aj-kg').value.replace(',','.')),m=$('aj-m').value.trim();if(isNaN(real)||!m)return;
+  const s=stk(p.id);s.dep=s.dep||{};const dif=+(real-(s.dep[S.dep]||0)).toFixed(3);s.dep[S.dep]=real;s.kg=+(s.kg+dif).toFixed(3);
+  const lk=(s.lotes||[]).reduce((a,x)=>a+x.kg,0);if(s.kg<=0)s.lotes=[];else if(dif>0)s.lotes=(s.lotes||[]).concat([{l:'AJUSTE',kg:dif,f:hoy(),sup:''}]);else if(lk>s.kg){let r=lk-s.kg;s.lotes.forEach(x=>{const t=Math.min(x.kg,r);x.kg=+(x.kg-t).toFixed(3);r-=t;});s.lotes=s.lotes.filter(x=>x.kg>0.001);}
+  S.db.doc('stock/'+p.id).set(s).catch(fail);S.db.collection('movs').add({t:Date.now(),tipo:'ajuste',aid:p.id,n:p.n,kg:dif,motivo:m,dep:S.dep,q:S.yo}).catch(fail);close();};
+A['ver-prod']=b=>{const p=S.amap.get(b.dataset.id),s=stk(p.id),vende=S.prod.filter(x=>x.r===p.id);
+  open('<h2>'+h(p.n)+'</h2><p class="note">'+(vende.length?'Se vende como: '+h(vende.map(x=>x.n).join(', ')):'Ningún producto de la lista de precios descuenta de este artículo todavía.')+'</p><h3>Por depósito</h3><div class="card">'+Object.entries(s.dep||{}).filter(e=>Math.abs(e[1])>0.001).map(e=>'<div class="ln"><div class="name">'+h(e[0])+'</div><div class="q" style="color:'+(e[1]<0?'var(--bad)':'var(--ink)')+'">'+num(e[1])+' '+p.u+'</div></div>').join('')+'<div class="ln"><div class="name">Total</div><div class="q">'+num(s.kg)+' '+p.u+'</div></div></div>'+((s.lotes||[]).length?'<h3>Lotes</h3><div class="card">'+s.lotes.map(x=>'<div class="ln"><div><div class="name">Lote '+h(x.l)+'</div><div class="sub">'+h(x.f)+' · '+h(x.sup||'')+'</div></div><div class="q">'+num(x.kg)+' '+p.u+'</div></div>').join('')+'</div>':'')+'<div class="row"><button class="btn grow" data-act="art-in" data-id="'+p.id+'">Ingreso</button><button class="btn grow" data-act="art-aj" data-id="'+p.id+'">Ajuste</button></div><h3>Etiqueta del artículo</h3>'+qrBox('RK:A:'+p.id)+'<div class="row"><button class="btn grow" data-act="bajar-qr" data-c="RK:A:'+p.id+'" data-n="'+h(p.n)+'">Guardar etiqueta</button><button class="btn pri grow" data-act="close">Cerrar</button></div>');};
+
+/* ---------- caja ---------- */
+A.pago=()=>{if(!needYo())return;open('<h2>Registrar gasto</h2><div class="two"><label class="f" for="pg-m">Monto<input id="pg-m" inputmode="numeric"></label><label class="f" for="pg-medio">Medio<select id="pg-medio">'+MEDIOS.slice(0,3).map(m=>'<option>'+m+'</option>').join('')+'</select></label></div><label class="f" for="pg-cat">Categoría (obligatoria)<select id="pg-cat"><option value="">Elegir</option>'+CATS.map(c=>'<option>'+c+'</option>').join('')+'</select></label><label class="f" for="pg-det">Detalle: a quién y por qué<input id="pg-det"></label><div id="pg-msg"></div><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="pg-ok">Guardar</button></div>');};
+A['pg-ok']=()=>{const m=parseFloat($('pg-m').value)||0,c=$('pg-cat').value,d=$('pg-det').value.trim();if(!(m>0)||!c||!d){$('pg-msg').innerHTML='<div class="msg bad">Monto, categoría y detalle son obligatorios.</div>';return;}
+  S.db.collection('caja').add({t:Date.now(),tipo:'pago',monto:m,medio:$('pg-medio').value,cat:c,det:d,q:S.yo}).catch(fail);close();};
+A.rendir=b=>{if(!needYo())return;const q=b.dataset.q;open('<h2>Rendir efectivo de '+h(q)+'</h2><label class="f" for="rd-a">Quién lo recibe<select id="rd-a">'+S.cfg.rinde_a.map(n=>'<option>'+h(n)+'</option>').join('')+'</select></label><p class="note">El efectivo se entrega solamente a '+h(S.cfg.rinde_a.join(' o '))+'.</p><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="rd-ok" data-q="'+h(q)+'">Confirmar rendición</button></div>');};
+A['rd-ok']=b=>{const a=$('rd-a').value,now=Date.now();S.caja.filter(m=>m.medio==='Efectivo'&&m.tipo==='cobro'&&!m.rendido&&m.q===b.dataset.q).forEach(m=>S.db.doc('caja/'+m.id).update({rendido:true,rendidoA:a,rendidoT:now,rendidoPor:S.yo}).catch(fail));close();};
+A.cobrar=b=>{if(!needYo())return;const p=gp(b);open('<h2>Cobrar a '+h(p.cliente)+'</h2><p class="note">Pedido '+h(p.id)+' · saldo '+money(saldo(p))+'</p><div class="two"><label class="f" for="cb-m">Monto<input id="cb-m" inputmode="numeric" value="'+Math.round(saldo(p))+'"></label><label class="f" for="cb-medio">Medio<select id="cb-medio">'+MEDIOS.slice(0,3).map(m=>'<option>'+m+'</option>').join('')+'</select></label></div><div class="row"><button class="btn grow" data-act="close">Cancelar</button><button class="btn pri grow" data-act="cb-ok" data-id="'+h(p.id)+'">Guardar cobro</button></div>');};
+A['cb-ok']=b=>{const p=gp(b),m=parseFloat($('cb-m').value)||0,medio=$('cb-medio').value;if(!(m>0))return;
+  S.db.collection('caja').add({t:Date.now(),tipo:'cobro',monto:m,medio:medio,cliente:p.cliente,ped:p.id,q:S.yo,rendido:false}).catch(fail);save(p,{cobrado:(p.cobrado||0)+m,ev:ev(p,'Cobró '+money(m)+' en '+medio.toLowerCase())});close();};
+
+const t0=(location.hash||'').slice(1);if(V[t0])S.tab=t0;
+fillYo();render();boot();
+})();
+</script>
+</body>
+</html>
